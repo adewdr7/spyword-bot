@@ -1,0 +1,15 @@
+# File sensitif - JANGAN di-upload ke GitHub!
+serviceAccountKey.json
+.env
+*.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
