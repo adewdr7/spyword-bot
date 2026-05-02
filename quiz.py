@@ -181,3 +181,42 @@ def try_fill(doc_id: str, soal: dict, position: int, letter: str,
         "new_balance": 0,  # diisi oleh caller setelah add_coins
         "out_of_range": False,
     }
+
+def try_answer(doc_id: str, soal: dict, answer_input: str,
+               user_id: str, user_name: str) -> dict:
+    """
+    Tebak jawaban penuh sekaligus.
+    Returns dict:
+      correct    : bool
+      reward     : int   (total koin yang didapat)
+      completed  : bool
+    """
+    answer   = soal.get("answer", "")
+    revealed = list(soal.get("revealed", []))
+    solvers  = dict(soal.get("solvers", {}))
+
+    if answer_input.strip().lower() != answer.strip().lower():
+        return {"correct": False, "reward": 0, "completed": False}
+
+    # Benar! Buka semua huruf yang belum terbuka
+    hidden = [i for i, c in enumerate(answer) if c != " " and i not in revealed]
+    reward_each = reward_per_letter(answer)
+    total_reward = reward_each * len(hidden)
+
+    revealed.extend(hidden)
+
+    if user_id not in solvers:
+        solvers[user_id] = {"name": user_name, "indices": [], "earned": 0}
+    solvers[user_id]["indices"].extend(hidden)
+    solvers[user_id]["earned"] = solvers[user_id].get("earned", 0) + total_reward
+
+    get_db().collection("quiz_soal").document(doc_id).update({
+        "revealed": revealed,
+        "solvers":  solvers,
+        "status":   "done",
+    })
+    soal["revealed"] = revealed
+    soal["solvers"]  = solvers
+    soal["status"]   = "done"
+
+    return {"correct": True, "reward": total_reward, "completed": True}

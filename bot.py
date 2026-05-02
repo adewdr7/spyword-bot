@@ -185,6 +185,7 @@ async def help_cmd(ctx):
             "`!soal` — Tampilkan soal aktif (10 koin)\n"
             "`!clue` — Buka 1 huruf acak (6 koin)\n"
             "`!f[n] [huruf]` — Tebak huruf posisi n (contoh: `!f1 J`)\n"
+            "`!j [jawaban]` — Tebak jawaban langsung (contoh: `!j Jakarta`)\n"
             "`!kirimsoal` — Submit soal baru via DM bot (22 koin)\n"
         ),
         inline=False
@@ -1219,8 +1220,60 @@ async def kirim_soal(ctx, *, args: str = None):
     await ctx.send(embed=embed)
 
 # ═══════════════════════════════════════════
-#  EVENT: Simpan lastGuild saat user pakai bot
+#  COMMAND: !j [jawaban]
 # ═══════════════════════════════════════════
+@bot.command(name="j")
+async def jawab_penuh(ctx, *, answer_input: str = None):
+    if not answer_input:
+        await ctx.send("❌ Format: `!j [jawaban]`\nContoh: `!j Jakarta`")
+        return
+
+    user_id   = str(ctx.author.id)
+    user_name = str(ctx.author)
+    guild_id  = str(ctx.guild.id)
+
+    doc_id, soal = quiz_sys.get_active_soal(guild_id)
+    if not soal:
+        await ctx.send(f"❌ {ctx.author.mention} tidak ada soal aktif saat ini!")
+        return
+
+    result = quiz_sys.try_answer(doc_id, soal, answer_input, user_id, user_name)
+
+    if not result["correct"]:
+        await ctx.send(f"❌ {ctx.author.mention} jawaban **{answer_input}** salah! Coba lagi.")
+        return
+
+    # Benar!
+    reward      = result["reward"]
+    new_balance = coin_sys.add_coins(user_id, reward)
+
+    embed = discord.Embed(
+        title="🎉 Jawaban Benar! Soal Selesai!",
+        color=0x00B894
+    )
+    embed.description = f"**Jawaban:** `{soal['answer']}`"
+    embed.add_field(name="🏆 Ditebak oleh", value=ctx.author.mention, inline=True)
+    embed.add_field(name="💰 Reward", value=f"+{reward} koin → total {new_balance} koin", inline=True)
+
+    # Tampilkan semua kontributor
+    fresh = quiz_sys.get_db().collection("quiz_soal").document(doc_id).get().to_dict()
+    solvers = fresh.get("solvers", {})
+    if len(solvers) > 1:
+        lines = []
+        for uid, info in solvers.items():
+            lines.append(f"<@{uid}> — {info.get('earned', 0)} koin")
+        embed.add_field(name="👥 Semua Kontributor", value="\n".join(lines), inline=False)
+
+    # Aktifkan soal berikutnya
+    next_id, next_soal = quiz_sys.activate_next_soal(guild_id)
+    if next_soal:
+        embed.add_field(name="➡️ Soal Berikutnya", value="Soal baru sudah aktif! Ketik `!soal` untuk lihat.", inline=False)
+    else:
+        embed.add_field(name="📭 Pool Kosong", value="Belum ada soal berikutnya. Submit soal dengan `!kirimsoal` via DM bot!", inline=False)
+
+    await ctx.send(embed=embed)
+
+
 @bot.listen("on_command")
 async def track_guild(ctx):
     if ctx.guild:
