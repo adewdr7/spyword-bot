@@ -1,27 +1,28 @@
 from firebase_admin import firestore
 from datetime import datetime, timezone
 
-db = firestore.client()
+def get_db():
+    return firestore.client()
 
 CLAIM_MIN = 66
 CLAIM_MAX = 110
 CLAIM_COOLDOWN_HOURS = 24
 
 def get_user_coins(user_id: str) -> dict:
-    ref = db.collection("users").document(user_id).get()
+    ref = get_db().collection("users").document(user_id).get()
     if ref.exists:
         return ref.to_dict()
     return {"coins": 0, "lastClaim": None}
 
 def set_user_coins(user_id: str, coins: int):
-    db.collection("users").document(user_id).set(
+    get_db().collection("users").document(user_id).set(
         {"coins": coins}, merge=True
     )
 
 def add_coins(user_id: str, amount: int) -> int:
     data = get_user_coins(user_id)
     new_balance = data.get("coins", 0) + amount
-    db.collection("users").document(user_id).set(
+    get_db().collection("users").document(user_id).set(
         {"coins": new_balance}, merge=True
     )
     return new_balance
@@ -33,7 +34,7 @@ def deduct_coins(user_id: str, amount: int) -> tuple[bool, int]:
     if current < amount:
         return False, current
     new_balance = current - amount
-    db.collection("users").document(user_id).set(
+    get_db().collection("users").document(user_id).set(
         {"coins": new_balance}, merge=True
     )
     return True, new_balance
@@ -63,7 +64,7 @@ def do_claim(user_id: str) -> tuple[bool, int, int]:
     data = get_user_coins(user_id)
     current = data.get("coins", 0)
     new_balance = current + gained
-    db.collection("users").document(user_id).set({
+    get_db().collection("users").document(user_id).set({
         "coins": new_balance,
         "lastClaim": datetime.now(timezone.utc)
     }, merge=True)

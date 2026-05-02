@@ -1092,7 +1092,7 @@ async def on_fill_message(message):
     new_balance = coin_sys.add_coins(user_id, reward)
 
     # Refresh soal dari Firestore
-    fresh = quiz_sys.db.collection("quiz_soal").document(doc_id).get().to_dict()
+    fresh = quiz_sys.get_db().collection("quiz_soal").document(doc_id).get().to_dict()
 
     embed = discord.Embed(color=0x00B894)
     if result["completed"]:
@@ -1219,7 +1219,7 @@ async def track_guild(ctx):
     if ctx.guild:
         user_id = str(ctx.author.id)
         from firebase_admin import firestore as fs
-        quiz_sys.db.collection("users").document(user_id).set(
+        quiz_sys.get_db().collection("users").document(user_id).set(
             {"lastGuild": str(ctx.guild.id)}, merge=True
         )
 

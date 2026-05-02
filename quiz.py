@@ -2,7 +2,11 @@ from firebase_admin import firestore
 from datetime import datetime, timezone
 import random
 
-db = firestore.client()
+def get_db():
+    return firestore.client()
+
+# alias untuk dipakai di bot.py
+db = None  # tidak dipakai langsung
 
 COST_SUBMIT = 22
 COST_SHOW   = 10
@@ -50,7 +54,7 @@ def build_display(soal: dict) -> str:
 def get_active_soal(guild_id: str) -> tuple[str | None, dict | None]:
     """Ambil soal aktif untuk server ini. Returns (doc_id, data)"""
     docs = (
-        db.collection("quiz_soal")
+        get_db().collection("quiz_soal")
         .where("guild_id", "==", guild_id)
         .where("status", "==", "active")
         .limit(1)
@@ -63,7 +67,7 @@ def get_active_soal(guild_id: str) -> tuple[str | None, dict | None]:
 def get_pool_soal(guild_id: str) -> list[tuple[str, dict]]:
     """Ambil semua soal pending untuk server ini."""
     docs = (
-        db.collection("quiz_soal")
+        get_db().collection("quiz_soal")
         .where("guild_id", "==", guild_id)
         .where("status", "==", "pending")
         .stream()
@@ -76,7 +80,7 @@ def activate_next_soal(guild_id: str) -> tuple[str | None, dict | None]:
     if not pool:
         return None, None
     doc_id, data = random.choice(pool)
-    db.collection("quiz_soal").document(doc_id).update({"status": "active"})
+    get_db().collection("quiz_soal").document(doc_id).update({"status": "active"})
     data["status"] = "active"
     return doc_id, data
 
@@ -109,7 +113,7 @@ def reveal_random_letter(doc_id: str, soal: dict, count: int = 1) -> dict:
     hidden   = [i for i, c in enumerate(answer) if c != " " and i not in revealed]
     to_show  = random.sample(hidden, min(count, len(hidden)))
     revealed.extend(to_show)
-    db.collection("quiz_soal").document(doc_id).update({"revealed": revealed})
+    get_db().collection("quiz_soal").document(doc_id).update({"revealed": revealed})
     soal["revealed"] = revealed
     return soal
 
@@ -165,7 +169,7 @@ def try_fill(doc_id: str, soal: dict, position: int, letter: str,
     if completed:
         update_data["status"] = "done"
 
-    db.collection("quiz_soal").document(doc_id).update(update_data)
+    get_db().collection("quiz_soal").document(doc_id).update(update_data)
     soal["revealed"] = revealed
     soal["solvers"]  = solvers
     if completed:
