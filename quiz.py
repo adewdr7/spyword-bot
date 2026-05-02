@@ -14,21 +14,27 @@ REWARD_BASE = 22  # total reward pool per soal (dibagi per huruf)
 # ─────────────────────────────────────────
 #  HELPERS
 # ─────────────────────────────────────────
+def is_letter(ch: str) -> bool:
+    return ch.isalnum()
+
 def mask_answer(answer: str, revealed: list[int]) -> str:
-    """Tampilkan huruf yang sudah ditebak, sisanya _ (spasi tetap spasi)"""
+    """Tampilkan huruf yang sudah ditebak, sisanya _.
+    Spasi dan tanda baca langsung ditampilkan tanpa perlu ditebak."""
     result = []
     for i, ch in enumerate(answer):
         if ch == " ":
-            result.append(" ")
+            result.append("  ")
+        elif not is_letter(ch):
+            result.append(ch)
         elif i in revealed:
             result.append(ch)
         else:
             result.append("_")
-    return " ".join(result) if " " not in answer else "".join(result)
+    return " ".join(result)
 
 def reward_per_letter(answer: str) -> int:
-    """Hitung reward per huruf (bulatkan, tanpa desimal)"""
-    letters = [c for c in answer if c != " "]
+    """Hitung reward per huruf (bulatkan, tanpa desimal) - hanya huruf/angka"""
+    letters = [c for c in answer if is_letter(c)]
     if not letters:
         return 0
     return round(REWARD_BASE / len(letters))
@@ -108,7 +114,7 @@ def reveal_random_letter(doc_id: str, soal: dict, count: int = 1) -> dict:
     """Reveal `count` huruf acak yang belum terlihat. Returns updated soal."""
     answer   = soal.get("answer", "")
     revealed = list(soal.get("revealed", []))
-    hidden   = [i for i, c in enumerate(answer) if c != " " and i not in revealed]
+    hidden   = [i for i, c in enumerate(answer) if is_letter(c) and i not in revealed]
     to_show  = random.sample(hidden, min(count, len(hidden)))
     revealed.extend(to_show)
     get_db().collection("quiz_soal").document(doc_id).update({"revealed": revealed})
@@ -157,7 +163,7 @@ def try_fill(doc_id: str, soal: dict, position: int, letter: str,
     solvers[user_id]["earned"] = solvers[user_id].get("earned", 0) + reward
 
     # Cek completed
-    hidden_left = [i for i, c in enumerate(answer) if c != " " and i not in revealed]
+    hidden_left = [i for i, c in enumerate(answer) if is_letter(c) and i not in revealed]
     completed = len(hidden_left) == 0
 
     update_data = {
@@ -199,7 +205,7 @@ def try_answer(doc_id: str, soal: dict, answer_input: str,
         return {"correct": False, "reward": 0, "completed": False}
 
     # Benar! Buka semua huruf yang belum terbuka
-    hidden = [i for i, c in enumerate(answer) if c != " " and i not in revealed]
+    hidden = [i for i, c in enumerate(answer) if is_letter(c) and i not in revealed]
     reward_each = reward_per_letter(answer)
     total_reward = reward_each * len(hidden)
 
