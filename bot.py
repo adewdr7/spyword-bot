@@ -143,6 +143,9 @@ async def on_ready():
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         return
+    import traceback
+    print(f"❌ ERROR pada command '{ctx.command}': {error}")
+    traceback.print_exc()
     await ctx.send(f"❌ Error: {error}")
 
 # ═══════════════════════════════════════════
