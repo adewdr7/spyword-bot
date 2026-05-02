@@ -915,6 +915,13 @@ async def claim_koin(ctx):
 @bot.command(name="qjoin")
 async def quiz_join(ctx):
     user_id = str(ctx.author.id)
+    guild_id = str(ctx.guild.id)
+
+    # Simpan lastGuild ke Firestore
+    quiz_sys.get_db().collection("users").document(user_id).set(
+        {"lastGuild": guild_id}, merge=True
+    )
+
     data = coin_sys.get_user_coins(user_id)
     balance = data.get("coins", 0)
     embed = discord.Embed(

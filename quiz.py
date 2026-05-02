@@ -5,8 +5,6 @@ import random
 def get_db():
     return firestore.client()
 
-# alias untuk dipakai di bot.py
-db = None  # tidak dipakai langsung
 
 COST_SUBMIT = 22
 COST_SHOW   = 10
