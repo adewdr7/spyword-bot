@@ -101,7 +101,7 @@ def submit_soal(guild_id: str, question: str, answer: str,
         "solvers":     {},   # {user_id: [indices_solved]}
         "createdAt":   datetime.now(timezone.utc),
     }
-    ref = db.collection("quiz_soal").add(data)
+    ref = get_db().collection("quiz_soal").add(data)
     return ref[1].id
 
 def reveal_random_letter(doc_id: str, soal: dict, count: int = 1) -> dict:
