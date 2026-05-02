@@ -22,7 +22,13 @@ else:
 
 db = firestore.client()
 
-# Import SETELAH Firebase diinisialisasi
+# DEBUG SEMENTARA — hapus setelah berhasil
+try:
+    db.collection("users").document("test_init").set({"ok": True})
+    print("✅ Firestore write berhasil!")
+except Exception as e:
+    print(f"❌ Firestore write gagal: {e}")
+
 import coins as coin_sys
 import quiz as quiz_sys
 
