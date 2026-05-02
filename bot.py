@@ -8,8 +8,6 @@ from discord.ext import commands
 import firebase_admin
 from firebase_admin import credentials, firestore
 from datetime import datetime, timedelta
-import coins as coin_sys
-import quiz as quiz_sys
 
 # ═══════════════════════════════════════════
 #  INISIALISASI FIREBASE
@@ -23,6 +21,10 @@ else:
     raise ValueError("FIREBASE_KEY_JSON tidak ditemukan di environment variables!")
 
 db = firestore.client()
+
+# Import SETELAH Firebase diinisialisasi
+import coins as coin_sys
+import quiz as quiz_sys
 
 # ═══════════════════════════════════════════
 #  INISIALISASI BOT DISCORD
