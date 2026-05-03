@@ -58,5 +58,545 @@
     "answer": "Tiga",
     "max_show": 0,
     "category": "Matematika"
+  },
+  {
+    "question": "Apa nama benua terkecil di dunia?",
+    "answer": "Australia",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa penemu telepon?",
+    "answer": "Alexander Graham Bell",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa simbol kimia untuk air?",
+    "answer": "H2O",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama samudra terluas di dunia?",
+    "answer": "Pasifik",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa pencipta lagu Indonesia Raya?",
+    "answer": "W.R. Supratman",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Negara mana yang dijuluki Negeri Gajah Putih?",
+    "answer": "Thailand",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa nama sungai terpanjang di dunia?",
+    "answer": "Nil",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Planet apa yang dikenal sebagai Planet Merah?",
+    "answer": "Mars",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Siapa pelukis Monalisa?",
+    "answer": "Leonardo da Vinci",
+    "max_show": 0,
+    "category": "Seni"
+  },
+  {
+    "question": "Apa nama mata uang resmi negara Inggris?",
+    "answer": "Poundsterling",
+    "max_show": 0,
+    "category": "Umum"
+  },
+  {
+    "question": "Kapan Indonesia merdeka?",
+    "answer": "17 Agustus 1945",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Gas apa yang paling banyak di atmosfer Bumi?",
+    "answer": "Nitrogen",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Berapa jumlah pemain dalam satu tim sepak bola?",
+    "answer": "11",
+    "max_show": 0,
+    "category": "Olahraga"
+  },
+  {
+    "question": "Apa nama proses tumbuhan membuat makanan sendiri?",
+    "answer": "Fotosintesis",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Negara mana yang memiliki Menara Eiffel?",
+    "answer": "Prancis",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa penemu gaya gravitasi?",
+    "answer": "Isaac Newton",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota negara Korea Selatan?",
+    "answer": "Seoul",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa presiden ke-7 Indonesia?",
+    "answer": "Joko Widodo",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Berapa banyak gigi orang dewasa normal?",
+    "answer": "32",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa singkatan dari World Wide Web?",
+    "answer": "WWW",
+    "max_show": 0,
+    "category": "Teknologi"
+  },
+  {
+    "question": "Apa alat musik petik dari Nusa Tenggara Timur?",
+    "answer": "Sasando",
+    "max_show": 0,
+    "category": "Seni"
+  },
+  {
+    "question": "Mamalia laut apa yang dikenal paling pintar?",
+    "answer": "Lumba-lumba",
+    "max_show": 0,
+    "category": "Hewan"
+  },
+  {
+    "question": "Apa nama ibukota negara Australia?",
+    "answer": "Canberra",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa penulis novel Laskar Pelangi?",
+    "answer": "Andrea Hirata",
+    "max_show": 0,
+    "category": "Seni"
+  },
+  {
+    "question": "Apa nama sel darah merah dalam tubuh manusia?",
+    "answer": "Eritrosit",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa candi Budha terbesar di dunia yang terletak di Indonesia?",
+    "answer": "Borobudur",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Berapa nol yang ada dalam satu miliar?",
+    "answer": "9",
+    "max_show": 0,
+    "category": "Matematika"
+  },
+  {
+    "question": "Apa nama mata uang negara Jepang?",
+    "answer": "Yen",
+    "max_show": 0,
+    "category": "Umum"
+  },
+  {
+    "question": "Negara mana yang menjadi tuan rumah Olimpiade pertama kali?",
+    "answer": "Yunani",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Siapa pendiri Microsoft?",
+    "answer": "Bill Gates",
+    "max_show": 0,
+    "category": "Teknologi"
+  },
+  {
+    "question": "Apa nama ibukota Thailand?",
+    "answer": "Bangkok",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa hewan khas dari pulau Komodo?",
+    "answer": "Komodo",
+    "max_show": 0,
+    "category": "Hewan"
+  },
+  {
+    "question": "Apa nama gurun terluas di dunia?",
+    "answer": "Sahara",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Berapa banyak jantung yang dimiliki gurita?",
+    "answer": "Tiga",
+    "max_show": 0,
+    "category": "Hewan"
+  },
+  {
+    "question": "Siapa penemu mesin uap?",
+    "answer": "James Watt",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota Malaysia?",
+    "answer": "Kuala Lumpur",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Logam apa yang cair pada suhu ruangan?",
+    "answer": "Raksa",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Berapa banyak ring yang ada di logo Olimpiade?",
+    "answer": "Lima",
+    "max_show": 0,
+    "category": "Olahraga"
+  },
+  {
+    "question": "Apa nama ibukota Rusia?",
+    "answer": "Moskow",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa nama alat musik gesek tradisional Jawa?",
+    "answer": "Rebab",
+    "max_show": 0,
+    "category": "Seni"
+  },
+  {
+    "question": "Siapa manusia pertama yang mendarat di bulan?",
+    "answer": "Neil Armstrong",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Apa organ tubuh yang berfungsi memompa darah?",
+    "answer": "Jantung",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota Jerman?",
+    "answer": "Berlin",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Berapa warna dalam pelangi standar?",
+    "answer": "Tujuh",
+    "max_show": 0,
+    "category": "Umum"
+  },
+  {
+    "question": "Apa hewan nasional Indonesia?",
+    "answer": "Garuda / Komodo",
+    "max_show": 0,
+    "category": "Budaya"
+  },
+  {
+    "question": "Apa nama selat yang memisahkan Jawa dan Sumatera?",
+    "answer": "Selat Sunda",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa pengarang novel Sherlock Holmes?",
+    "answer": "Arthur Conan Doyle",
+    "max_show": 0,
+    "category": "Seni"
+  },
+  {
+    "question": "Berapa banyak pemain dalam satu tim basket?",
+    "answer": "5",
+    "max_show": 0,
+    "category": "Olahraga"
+  },
+  {
+    "question": "Apa planet yang paling dekat dengan Matahari?",
+    "answer": "Merkurius",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota Mesir?",
+    "answer": "Kairo",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa penemu radio?",
+    "answer": "Guglielmo Marconi",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama selat yang memisahkan Singapura dan Indonesia?",
+    "answer": "Selat Singapura",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa nama ibu kota Amerika Serikat?",
+    "answer": "Washington D.C.",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa yang dimaksud dengan herbivora?",
+    "answer": "Pemakan tumbuhan",
+    "max_show": 0,
+    "category": "Hewan"
+  },
+  {
+    "question": "Apa mata uang resmi negara Cina?",
+    "answer": "Yuan",
+    "max_show": 0,
+    "category": "Umum"
+  },
+  {
+    "question": "Siapa pahlawan emansipasi wanita di Indonesia?",
+    "answer": "R.A. Kartini",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Apa nama lapisan terluar bumi?",
+    "answer": "Kerak Bumi",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Berapa derajat sudut siku-siku?",
+    "answer": "90",
+    "max_show": 0,
+    "category": "Matematika"
+  },
+  {
+    "question": "Apa nama ibukota negara Italia?",
+    "answer": "Roma",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa tokoh penemu pesawat terbang?",
+    "answer": "Wright Bersaudara",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa kepanjangan dari PBB?",
+    "answer": "Perserikatan Bangsa-Bangsa",
+    "max_show": 0,
+    "category": "Umum"
+  },
+  {
+    "question": "Apa nama satelit alami Bumi?",
+    "answer": "Bulan",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Siapa yang menjahit bendera Merah Putih pertama kali?",
+    "answer": "Fatmawati",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Apa nama ibukota Arab Saudi?",
+    "answer": "Riyadh",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa nama alat musik tiup yang berasal dari bambu di Sulawesi?",
+    "answer": "Suling",
+    "max_show": 0,
+    "category": "Seni"
+  },
+  {
+    "question": "Berapa banyak pilar dalam Rukun Islam?",
+    "answer": "Lima",
+    "max_show": 0,
+    "category": "Umum"
+  },
+  {
+    "question": "Apa nama ibukota India?",
+    "answer": "New Delhi",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa nama sel yang membawa oksigen di tubuh?",
+    "answer": "Sel darah merah",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota Belanda?",
+    "answer": "Amsterdam",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa raja pertama Majapahit?",
+    "answer": "Raden Wijaya",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Apa nama alat pengukur suhu?",
+    "answer": "Termometer",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota Korea Utara?",
+    "answer": "Pyongyang",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Negara mana yang paling banyak penduduknya di dunia?",
+    "answer": "India",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa nama ibukota negara Spanyol?",
+    "answer": "Madrid",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa penulis buku Habis Gelap Terbitlah Terang?",
+    "answer": "R.A. Kartini",
+    "max_show": 0,
+    "category": "Seni"
+  },
+  {
+    "question": "Apa nama ibukota Turki?",
+    "answer": "Ankara",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Berapa jumlah kaki laba-laba?",
+    "answer": "Delapan",
+    "max_show": 0,
+    "category": "Hewan"
+  },
+  {
+    "question": "Apa simbol kimia untuk Perak?",
+    "answer": "Ag",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota Vietnam?",
+    "answer": "Hanoi",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa Bapak Koperasi Indonesia?",
+    "answer": "Mohammad Hatta",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Apa nama organ tubuh untuk mencerna protein pertama kali?",
+    "answer": "Lambung",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota Filipina?",
+    "answer": "Manila",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa pencipta karakter Mickey Mouse?",
+    "answer": "Walt Disney",
+    "max_show": 0,
+    "category": "Seni"
+  },
+  {
+    "question": "Apa nama ibukota Portugal?",
+    "answer": "Lisabon",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Negara mana yang memenangkan Piala Dunia FIFA 2022?",
+    "answer": "Argentina",
+    "max_show": 0,
+    "category": "Olahraga"
+  },
+  {
+    "question": "Apa nama bagian mata yang memberi warna?",
+    "answer": "Iris",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota negara Kanada?",
+    "answer": "Ottawa",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa nama proses perubahan uap air menjadi titik air?",
+    "answer": "Kondensasi",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibukota Selandia Baru?",
+    "answer": "Wellington",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa penemu tabel periodik unsur?",
+    "answer": "Dmitri Mendeleev",
+    "max_show": 0,
+    "category": "Sains"
   }
 ]
