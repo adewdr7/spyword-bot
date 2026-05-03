@@ -922,10 +922,14 @@ async def quiz_join(ctx):
     user_id = str(ctx.author.id)
     guild_id = str(ctx.guild.id)
 
-    # Simpan lastGuild ke Firestore
+    # Simpan lastGuild & tandai user sudah join quiz di server ini
     quiz_sys.get_db().collection("users").document(user_id).set(
         {"lastGuild": guild_id}, merge=True
     )
+    quiz_sys.get_db().collection("quiz_members").document(f"{guild_id}_{user_id}").set({
+        "user_id": user_id,
+        "guild_id": guild_id,
+    }, merge=True)
 
     data = coin_sys.get_user_coins(user_id)
     balance = data.get("coins", 0)
@@ -938,9 +942,10 @@ async def quiz_join(ctx):
     embed.add_field(
         name="📋 Command Quiz",
         value=(
-            "`!soal` — Tampilkan soal aktif (10 koin)\n"
+            "`!soal` — Tampilkan soal aktif (gratis)\n"
             "`!clue` — Buka 1 huruf acak (6 koin)\n"
             "`!f[n] [huruf]` — Tebak huruf di posisi n\n"
+            "`!j [jawaban]` — Tebak jawaban langsung\n"
             "`!claim` — Klaim koin harian\n"
             "`!kirimsoal` — Submit soal baru via DM (22 koin)\n"
         ),
@@ -950,11 +955,23 @@ async def quiz_join(ctx):
     await ctx.send(embed=embed)
 
 # ═══════════════════════════════════════════
+#  HELPER: Cek apakah user sudah !qjoin
+# ═══════════════════════════════════════════
+def is_quiz_member(guild_id: str, user_id: str) -> bool:
+    doc = quiz_sys.get_db().collection("quiz_members").document(f"{guild_id}_{user_id}").get()
+    return doc.exists
+
+# ═══════════════════════════════════════════
 #  COMMAND: !soal
 # ═══════════════════════════════════════════
 @bot.command(name="soal")
 async def tampil_soal(ctx):
+    user_id  = str(ctx.author.id)
     guild_id = str(ctx.guild.id)
+
+    if not is_quiz_member(guild_id, user_id):
+        await ctx.send(f"❌ {ctx.author.mention} kamu belum join quiz! Ketik `!qjoin` dulu.")
+        return
 
     doc_id, soal = quiz_sys.get_active_soal(guild_id)
     if not soal:
@@ -994,6 +1011,10 @@ async def tampil_soal(ctx):
 async def beli_clue(ctx):
     user_id  = str(ctx.author.id)
     guild_id = str(ctx.guild.id)
+
+    if not is_quiz_member(guild_id, user_id):
+        await ctx.send(f"❌ {ctx.author.mention} kamu belum join quiz! Ketik `!qjoin` dulu.")
+        return
 
     doc_id, soal = quiz_sys.get_active_soal(guild_id)
     if not soal:
@@ -1056,6 +1077,10 @@ async def on_fill_message(message):
     user_id  = str(message.author.id)
     user_name = str(message.author)
     guild_id = str(message.guild.id)
+
+    if not is_quiz_member(guild_id, user_id):
+        await message.channel.send(f"❌ {message.author.mention} kamu belum join quiz! Ketik `!qjoin` dulu.")
+        return
 
     doc_id, soal = quiz_sys.get_active_soal(guild_id)
     if not soal:
@@ -1220,6 +1245,10 @@ async def jawab_penuh(ctx, *, answer_input: str = None):
     user_id   = str(ctx.author.id)
     user_name = str(ctx.author)
     guild_id  = str(ctx.guild.id)
+
+    if not is_quiz_member(guild_id, user_id):
+        await ctx.send(f"❌ {ctx.author.mention} kamu belum join quiz! Ketik `!qjoin` dulu.")
+        return
 
     doc_id, soal = quiz_sys.get_active_soal(guild_id)
     if not soal:
