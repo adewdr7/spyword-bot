@@ -121,6 +121,21 @@ def activate_next_soal(guild_id: str) -> tuple[str | None, dict | None]:
     doc_id = ref[1].id
     return doc_id, data
 
+def save_soal_message(guild_id: str, channel_id: int, message_id: int):
+    """Simpan channel_id & message_id pesan soal terakhir per server."""
+    get_db().collection("quiz_state").document(guild_id).set({
+        "channel_id": channel_id,
+        "message_id": message_id,
+    }, merge=True)
+
+def get_soal_message(guild_id: str) -> tuple[int | None, int | None]:
+    """Ambil channel_id & message_id pesan soal terakhir. Returns (channel_id, message_id)"""
+    doc = get_db().collection("quiz_state").document(guild_id).get()
+    if doc.exists:
+        data = doc.to_dict()
+        return data.get("channel_id"), data.get("message_id")
+    return None, None
+
 def submit_soal(guild_id: str, question: str, answer: str,
                 max_show: int, submitter_name: str, submitter_id: str,
                 category: str = "Umum") -> str:

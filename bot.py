@@ -955,6 +955,23 @@ async def quiz_join(ctx):
     await ctx.send(embed=embed)
 
 # ═══════════════════════════════════════════
+#  HELPER: Build embed soal (reusable)
+# ═══════════════════════════════════════════
+def build_soal_embed(soal: dict) -> discord.Embed:
+    answer = soal.get("answer", "")
+    total_letters = len([c for c in answer if c != " "])
+    revealed_count = len(soal.get("revealed", []))
+    embed = discord.Embed(title="❓ Soal Quiz", color=0x74B9FF)
+    embed.description = quiz_sys.build_display(soal)
+    embed.add_field(
+        name="📊 Progress",
+        value=f"{revealed_count}/{total_letters} huruf terbuka",
+        inline=True
+    )
+    embed.set_footer(text="!f[n] [huruf] tebak huruf • !j [jawaban] tebak penuh • !clue buka huruf (6 koin)")
+    return embed
+
+# ═══════════════════════════════════════════
 #  HELPER: Cek apakah user sudah !qjoin
 # ═══════════════════════════════════════════
 def is_quiz_member(guild_id: str, user_id: str) -> bool:
@@ -991,18 +1008,10 @@ async def tampil_soal(ctx):
     if len(revealed) < max_show:
         soal = quiz_sys.reveal_random_letter(doc_id, soal, max_show - len(revealed))
 
-    embed = discord.Embed(title="❓ Soal Quiz", color=0x74B9FF)
-    embed.description = quiz_sys.build_display(soal)
-    answer = soal.get("answer", "")
-    total_letters = len([c for c in answer if c != " "])
-    revealed_count = len(soal.get("revealed", []))
-    embed.add_field(
-        name="📊 Progress",
-        value=f"{revealed_count}/{total_letters} huruf terbuka",
-        inline=True
-    )
-    embed.set_footer(text="!f[n] [huruf] untuk menebak • !clue untuk buka huruf (6 koin)")
-    await ctx.send(embed=embed)
+    embed = build_soal_embed(soal)
+    msg = await ctx.send(embed=embed)
+    # Simpan message ID supaya bisa diedit oleh !clue dan !f
+    quiz_sys.save_soal_message(guild_id, ctx.channel.id, msg.id)
 
 # ═══════════════════════════════════════════
 #  COMMAND: !clue
@@ -1038,10 +1047,26 @@ async def beli_clue(ctx):
         return
 
     soal = quiz_sys.reveal_random_letter(doc_id, soal, 1)
-    embed = discord.Embed(title="💡 Clue Dibuka!", color=0xFDCB6E)
-    embed.description = quiz_sys.build_display(soal)
-    embed.add_field(name="💰 Saldo", value=f"{new_bal} koin", inline=True)
-    await ctx.send(embed=embed)
+
+    # Coba edit pesan soal sebelumnya
+    channel_id, message_id = quiz_sys.get_soal_message(guild_id)
+    embed = build_soal_embed(soal)
+    embed.title = "❓ Soal Quiz (Clue dibuka!)"
+    embed.color = 0xFDCB6E
+    edited = False
+    if channel_id and message_id:
+        try:
+            ch = bot.get_channel(int(channel_id))
+            if ch:
+                old_msg = await ch.fetch_message(int(message_id))
+                await old_msg.edit(embed=embed)
+                edited = True
+                await ctx.message.add_reaction("✅")
+        except:
+            pass
+    if not edited:
+        msg = await ctx.send(embed=embed)
+        quiz_sys.save_soal_message(guild_id, ctx.channel.id, msg.id)
 
 # ═══════════════════════════════════════════
 #  COMMAND: !f[n] [huruf]  (misal !f1 J)
@@ -1110,40 +1135,57 @@ async def on_fill_message(message):
         return
 
     # Benar! Beri reward
-    reward     = result["reward"]
+    reward      = result["reward"]
     new_balance = coin_sys.add_coins(user_id, reward)
 
     # Refresh soal dari Firestore
     fresh = quiz_sys.get_db().collection("quiz_soal").document(doc_id).get().to_dict()
 
-    embed = discord.Embed(color=0x00B894)
+    guild_id_str = str(message.guild.id)
+    channel_id, message_id = quiz_sys.get_soal_message(guild_id_str)
+
     if result["completed"]:
-        embed.title = "🎉 Soal Selesai!"
+        # Soal selesai — kirim pesan baru & hapus embed soal lama
+        embed = discord.Embed(title="🎉 Soal Selesai!", color=0x00B894)
         embed.description = f"Semua huruf berhasil ditebak!\n\n**Jawaban:** `{soal['answer']}`"
         embed.add_field(name="💰 Reward", value=f"+{reward} koin → total {new_balance} koin", inline=False)
-
-        # Tampilkan semua solver
         solvers = fresh.get("solvers", {})
         if solvers:
-            lines = []
-            for uid, info in solvers.items():
-                lines.append(f"<@{uid}> — {info.get('earned',0)} koin ({len(info.get('indices',[]))} huruf)")
+            lines = [f"<@{uid}> — {info.get('earned',0)} koin ({len(info.get('indices',[]))} huruf)"
+                     for uid, info in solvers.items()]
             embed.add_field(name="🏆 Kontributor", value="\n".join(lines), inline=False)
-
-        # Aktifkan soal berikutnya
-        next_id, next_soal = quiz_sys.activate_next_soal(str(message.guild.id))
+        next_id, next_soal = quiz_sys.activate_next_soal(guild_id_str)
         if next_soal:
-            embed.add_field(name="➡️ Soal Berikutnya", value="Soal baru dari pool sudah aktif! Ketik `!soal` untuk lihat.", inline=False)
+            embed.add_field(name="➡️ Soal Berikutnya", value="Soal baru sudah aktif! Ketik `!soal` untuk lihat.", inline=False)
+        # Hapus embed soal lama
+        if channel_id and message_id:
+            try:
+                ch = bot.get_channel(int(channel_id))
+                if ch:
+                    old_msg = await ch.fetch_message(int(message_id))
+                    await old_msg.delete()
+            except:
+                pass
+        await message.channel.send(f"{message.author.mention}", embed=embed)
     else:
-        embed.title = f"✅ Huruf Benar! +{reward} koin"
-        embed.description = quiz_sys.build_display(fresh)
-        embed.add_field(name="💰 Saldo", value=f"{new_balance} koin", inline=True)
-        answer = fresh.get("answer", "")
-        total  = len([c for c in answer if c != " "])
-        rev    = len(fresh.get("revealed", []))
-        embed.add_field(name="📊 Progress", value=f"{rev}/{total} huruf", inline=True)
-
-    await message.channel.send(f"{message.author.mention}", embed=embed)
+        # Edit embed soal yang ada
+        embed = build_soal_embed(fresh)
+        embed.title = f"❓ Soal Quiz (+{reward} koin untuk {message.author.display_name})"
+        embed.color = 0x00B894
+        edited = False
+        if channel_id and message_id:
+            try:
+                ch = bot.get_channel(int(channel_id))
+                if ch:
+                    old_msg = await ch.fetch_message(int(message_id))
+                    await old_msg.edit(embed=embed)
+                    edited = True
+                    await message.add_reaction("✅")
+            except:
+                pass
+        if not edited:
+            msg = await message.channel.send(embed=embed)
+            quiz_sys.save_soal_message(guild_id_str, message.channel.id, msg.id)
 
 # ═══════════════════════════════════════════
 #  COMMAND: !kirimsoal (harus via DM)
