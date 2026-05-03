@@ -7,7 +7,7 @@ def get_db():
 
 
 COST_SUBMIT = 22
-COST_SHOW   = 10
+COST_SHOW   = 0
 COST_CLUE   = 6
 REWARD_BASE = 22  # total reward pool per soal (dibagi per huruf)
 

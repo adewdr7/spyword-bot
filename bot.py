@@ -186,7 +186,7 @@ async def help_cmd(ctx):
         name="🧩 Quiz Tebak Kata",
         value=(
             "`!qjoin` — Bergabung ke quiz\n"
-            "`!soal` — Tampilkan soal aktif (10 koin)\n"
+            "`!soal` — Tampilkan soal aktif (gratis)\n"
             "`!clue` — Buka 1 huruf acak (6 koin)\n"
             "`!f[n] [huruf]` — Tebak huruf posisi n (contoh: `!f1 J`)\n"
             "`!j [jawaban]` — Tebak jawaban langsung (contoh: `!j Jakarta`)\n"
@@ -954,19 +954,7 @@ async def quiz_join(ctx):
 # ═══════════════════════════════════════════
 @bot.command(name="soal")
 async def tampil_soal(ctx):
-    user_id  = str(ctx.author.id)
     guild_id = str(ctx.guild.id)
-
-    # Cek & deduct koin
-    ok, new_bal = coin_sys.deduct_coins(user_id, quiz_sys.COST_SHOW)
-    if not ok:
-        data = coin_sys.get_user_coins(user_id)
-        await ctx.send(
-            f"❌ {ctx.author.mention} koin tidak cukup! "
-            f"Kamu punya **{data.get('coins',0)}** koin, butuh **{quiz_sys.COST_SHOW}** koin.\n"
-            f"Ketik `!claim` untuk klaim koin harian!"
-        )
-        return
 
     doc_id, soal = quiz_sys.get_active_soal(guild_id)
     if not soal:
@@ -974,11 +962,9 @@ async def tampil_soal(ctx):
         doc_id, soal = quiz_sys.activate_next_soal(guild_id)
 
     if not soal:
-        # Kembalikan koin karena tidak ada soal
-        coin_sys.add_coins(user_id, quiz_sys.COST_SHOW)
         await ctx.send(
             f"📭 {ctx.author.mention} belum ada soal aktif di server ini!\n"
-            f"Koin kamu dikembalikan. Submit soal dengan `!kirimsoal` via DM bot."
+            f"Submit soal dengan `!kirimsoal` via DM bot."
         )
         return
 
@@ -998,7 +984,6 @@ async def tampil_soal(ctx):
         value=f"{revealed_count}/{total_letters} huruf terbuka",
         inline=True
     )
-    embed.add_field(name="💰 Saldo", value=f"{new_bal} koin", inline=True)
     embed.set_footer(text="!f[n] [huruf] untuk menebak • !clue untuk buka huruf (6 koin)")
     await ctx.send(embed=embed)
 
