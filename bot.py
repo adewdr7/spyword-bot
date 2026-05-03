@@ -1171,11 +1171,12 @@ async def kirim_soal(ctx, *, args: str = None):
         )
         return
 
-    # Parse Q, A, MS
+    # Parse Q, A, MS (opsional), C (opsional)
     lines = [l.strip() for l in args.strip().splitlines()]
     q_line  = next((l for l in lines if l.upper().startswith("Q")), None)
     a_line  = next((l for l in lines if l.upper().startswith("A")), None)
     ms_line = next((l for l in lines if l.upper().startswith("MS")), None)
+    c_line  = next((l for l in lines if l.upper().startswith("C")), None)
 
     if not q_line or not a_line:
         await ctx.send("❌ Format salah! Harus ada baris `Q :` dan `A :`")
@@ -1183,12 +1184,13 @@ async def kirim_soal(ctx, *, args: str = None):
 
     question = q_line.split(":", 1)[-1].strip()
     answer   = a_line.split(":", 1)[-1].strip()
-    max_show = 1
+    category = c_line.split(":", 1)[-1].strip() if c_line else "Umum"
+    max_show = 0
     if ms_line:
         try:
-            max_show = max(1, int(ms_line.split(":", 1)[-1].strip()))
+            max_show = max(0, int(ms_line.split(":", 1)[-1].strip()))
         except:
-            max_show = 1
+            max_show = 0
 
     if not question or not answer:
         await ctx.send("❌ Pertanyaan dan jawaban tidak boleh kosong!")
@@ -1221,6 +1223,7 @@ async def kirim_soal(ctx, *, args: str = None):
         question      = question,
         answer        = answer,
         max_show      = max_show,
+        category      = category,
         submitter_name= str(ctx.author),
         submitter_id  = user_id,
     )
@@ -1228,7 +1231,8 @@ async def kirim_soal(ctx, *, args: str = None):
     embed = discord.Embed(title="✅ Soal Berhasil Dikirim!", color=0x00B894)
     embed.add_field(name="❓ Pertanyaan", value=question, inline=False)
     embed.add_field(name="✏️ Jawaban", value=answer, inline=True)
-    embed.add_field(name="👁️ Max Show", value=str(max_show), inline=True)
+    embed.add_field(name="📂 Kategori", value=category, inline=True)
+    embed.add_field(name="👁️ Max Show", value=str(max_show) if max_show > 0 else "0 (semua tersembunyi)", inline=True)
     embed.add_field(name="💰 Saldo", value=f"{new_bal} koin", inline=True)
     embed.set_footer(text="Soal masuk ke pool dan akan tampil giliran berikutnya!")
     await ctx.send(embed=embed)
