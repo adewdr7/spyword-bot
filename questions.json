@@ -1,0 +1,62 @@
+[
+  {
+    "question": "Apa nama ibukota Indonesia?",
+    "answer": "Jakarta",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa presiden pertama Indonesia?",
+    "answer": "Soekarno",
+    "max_show": 0,
+    "category": "Sejarah"
+  },
+  {
+    "question": "Apa nama planet terbesar di tata surya?",
+    "answer": "Jupiter",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Berapa jumlah provinsi di Indonesia?",
+    "answer": "38",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Apa nama gunung tertinggi di dunia?",
+    "answer": "Everest",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Siapa penemu bola lampu?",
+    "answer": "Edison",
+    "max_show": 0,
+    "category": "Sains"
+  },
+  {
+    "question": "Apa nama ibu kota Jepang?",
+    "answer": "Tokyo",
+    "max_show": 0,
+    "category": "Geografi"
+  },
+  {
+    "question": "Hewan apa yang dikenal paling cepat di darat?",
+    "answer": "Cheetah",
+    "max_show": 0,
+    "category": "Hewan"
+  },
+  {
+    "question": "Apa warna langit di siang hari?",
+    "answer": "Biru",
+    "max_show": 0,
+    "category": "Umum"
+  },
+  {
+    "question": "Berapa sisi yang dimiliki segitiga?",
+    "answer": "Tiga",
+    "max_show": 0,
+    "category": "Matematika"
+  }
+]
