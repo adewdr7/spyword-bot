@@ -516,8 +516,8 @@
     "category": "Geografi"
   },
   {
-    "question": "Berapa jumlah kaki laba-laba?",
-    "answer": "Delapan",
+    "question": "Berapa banyak kaki laba-laba?",
+    "answer": "8",
     "max_show": 0,
     "category": "Hewan"
   },
@@ -559,7 +559,7 @@
   },
   {
     "question": "Apa nama ibukota Portugal?",
-    "answer": "Lisabon",
+    "answer": "Lisbon",
     "max_show": 0,
     "category": "Geografi"
   },
