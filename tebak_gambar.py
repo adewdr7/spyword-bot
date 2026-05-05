@@ -110,41 +110,45 @@ def mark_user_verified(discord_id: str, discord_name: str):
 def get_active_soal_tg(guild_id: str) -> tuple[str | None, dict | None]:
     """
     Ambil soal tebak gambar aktif untuk server ini.
+    Cek guild spesifik dulu, kalau kosong cek soal global (guild_id == "").
     Returns (doc_id, data) atau (None, None).
     """
-    docs = (
-        get_db().collection("tebak_gambar")
-        .where("guild_id", "==", guild_id)
-        .where("status", "==", "active")
-        .limit(1)
-        .stream()
-    )
-    for doc in docs:
-        return doc.id, doc.to_dict()
+    for gid in [guild_id, ""]:
+        docs = (
+            get_db().collection("tebak_gambar")
+            .where("guild_id", "==", gid)
+            .where("status", "==", "active")
+            .limit(1)
+            .stream()
+        )
+        for doc in docs:
+            return doc.id, doc.to_dict()
     return None, None
 
 
 def activate_next_soal_tg(guild_id: str) -> tuple[str | None, dict | None]:
     """
     Aktifkan soal approved berikutnya untuk server ini.
+    Cek guild spesifik dulu, kalau kosong cek soal global (guild_id == "").
     Returns (doc_id, data) atau (None, None) jika pool kosong.
     """
-    docs = (
-        get_db().collection("tebak_gambar")
-        .where("guild_id", "==", guild_id)
-        .where("status", "==", "approved")
-        .order_by("approvedAt")
-        .limit(1)
-        .stream()
-    )
-    for doc in docs:
-        get_db().collection("tebak_gambar").document(doc.id).update({
-            "status"     : "active",
-            "activatedAt": datetime.now(timezone.utc),
-        })
-        data = doc.to_dict()
-        data["status"] = "active"
-        return doc.id, data
+    for gid in [guild_id, ""]:
+        docs = (
+            get_db().collection("tebak_gambar")
+            .where("guild_id", "==", gid)
+            .where("status", "==", "approved")
+            .order_by("approvedAt")
+            .limit(1)
+            .stream()
+        )
+        for doc in docs:
+            get_db().collection("tebak_gambar").document(doc.id).update({
+                "status"     : "active",
+                "activatedAt": datetime.now(timezone.utc),
+            })
+            data = doc.to_dict()
+            data["status"] = "active"
+            return doc.id, data
     return None, None
 
 
