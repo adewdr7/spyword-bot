@@ -24,6 +24,7 @@ db = firestore.client()
 
 import coins as coin_sys
 import quiz as quiz_sys
+import tebak_gambar as tg_sys
 
 # ═══════════════════════════════════════════
 #  INISIALISASI BOT DISCORD
@@ -199,6 +200,16 @@ async def help_cmd(ctx):
         value=(
             "`!koin` — Cek saldo koin\n"
             "`!claim` — Klaim koin harian (66-110 koin, per 24 jam)\n"
+        ),
+        inline=False
+    )
+    embed.add_field(
+        name="🖼️ Tebak Gambar",
+        value=(
+            "`!tgjoin` — Bergabung ke tebak gambar\n"
+            "`!tg` — Tampilkan soal tebak gambar aktif\n"
+            "`!jg [jawaban]` — Jawab soal tebak gambar\n"
+            "`!v` — Generate kode verifikasi Discord (via DM bot)\n"
         ),
         inline=False
     )
@@ -1346,6 +1357,238 @@ async def track_guild(ctx):
         quiz_sys.get_db().collection("users").document(user_id).set(
             {"lastGuild": str(ctx.guild.id)}, merge=True
         )
+
+# ═══════════════════════════════════════════
+#  HELPER: Build embed soal tebak gambar (reusable)
+# ═══════════════════════════════════════════
+def build_tg_embed(soal: dict) -> discord.Embed:
+    embed = discord.Embed(title="🖼️ Tebak Gambar", color=0xA29BFE)
+    embed.description = tg_sys.build_tg_display(soal)
+
+    image_url = soal.get("imageUrl", "")
+    if image_url:
+        embed.set_image(url=image_url)
+
+    embed.set_footer(text="!jg [jawaban] — tebak jawaban • !tg — lihat soal lagi")
+    return embed
+
+
+# ═══════════════════════════════════════════
+#  COMMAND: !tgjoin
+#  User harus join dulu sebelum bisa ikut tebak gambar
+# ═══════════════════════════════════════════
+@bot.command(name="tgjoin")
+async def tg_join(ctx):
+    user_id  = str(ctx.author.id)
+    guild_id = str(ctx.guild.id)
+
+    tg_sys.join_tg(guild_id, user_id)
+
+    embed = discord.Embed(
+        title="🖼️ Bergabung ke Tebak Gambar!",
+        description=f"{ctx.author.mention} siap bermain Tebak Gambar!",
+        color=0xA29BFE
+    )
+    embed.add_field(
+        name="📋 Command",
+        value=(
+            "`!tg` — Tampilkan soal aktif\n"
+            "`!jg [jawaban]` — Jawab soal\n"
+        ),
+        inline=False
+    )
+    embed.set_footer(text="Belum verifikasi? DM bot dengan !v dulu!")
+    await ctx.send(embed=embed)
+
+
+# ═══════════════════════════════════════════
+#  COMMAND: !v  (hanya via DM)
+#  Generate kode verifikasi 32 karakter untuk dihubungkan ke app
+# ═══════════════════════════════════════════
+@bot.command(name="v")
+async def verify_cmd(ctx):
+    # Wajib via DM
+    if ctx.guild is not None:
+        await ctx.send(
+            f"❌ {ctx.author.mention} command `!v` hanya bisa dipakai via **DM bot**!\n"
+            f"Klik nama bot → **Message** → ketik `!v` di sana."
+        )
+        return
+
+    user_id   = str(ctx.author.id)
+    user_name = str(ctx.author)
+
+    # Cek apakah sudah terverifikasi sebelumnya
+    user_doc = tg_sys.get_db().collection("users").document(user_id).get()
+    if user_doc.exists:
+        user_data = user_doc.to_dict()
+        if user_data.get("isVerified"):
+            await ctx.send(
+                "✅ Akunmu **sudah terverifikasi** sebelumnya!\n"
+                "Tidak perlu verifikasi ulang. Buka aplikasi dan lanjutkan."
+            )
+            return
+
+    code = tg_sys.generate_verify_code(user_id, user_name)
+
+    embed = discord.Embed(
+        title="🔐 Kode Verifikasi Akun Discord",
+        description=(
+            "Salin kode di bawah ini dan masukkan ke aplikasi untuk menghubungkan "
+            "akun Discord kamu.\n\n"
+            "**Kode ini berlaku selama 24 jam dan hanya bisa dipakai 1 kali.**"
+        ),
+        color=0x00CEC9
+    )
+    embed.add_field(
+        name="🔑 Kode Verifikasimu",
+        value=f"```\n{code}\n```",
+        inline=False
+    )
+    embed.add_field(
+        name="📱 Cara Pakai",
+        value=(
+            "1. Buka aplikasi\n"
+            "2. Masuk ke menu **Verifikasi Discord**\n"
+            "3. Paste kode di atas\n"
+            "4. Tekan **Verifikasi**"
+        ),
+        inline=False
+    )
+    embed.set_footer(text="Jangan bagikan kode ini ke siapapun!")
+    await ctx.send(embed=embed)
+
+
+# ═══════════════════════════════════════════
+#  COMMAND: !tg
+#  Tampilkan soal tebak gambar aktif di server ini
+# ═══════════════════════════════════════════
+@bot.command(name="tg")
+async def tampil_soal_tg(ctx):
+    user_id  = str(ctx.author.id)
+    guild_id = str(ctx.guild.id)
+
+    if not tg_sys.is_tg_member(guild_id, user_id):
+        await ctx.send(
+            f"❌ {ctx.author.mention} kamu belum join! Ketik `!tgjoin` dulu."
+        )
+        return
+
+    doc_id, soal = tg_sys.get_active_soal_tg(guild_id)
+    if not soal:
+        # Coba aktifkan soal berikutnya dari pool approved
+        doc_id, soal = tg_sys.activate_next_soal_tg(guild_id)
+
+    if not soal:
+        await ctx.send(
+            f"📭 {ctx.author.mention} belum ada soal tebak gambar aktif di server ini!\n"
+            f"Submit soal baru lewat aplikasi."
+        )
+        return
+
+    embed = build_tg_embed(soal)
+    msg   = await ctx.send(embed=embed)
+    tg_sys.save_tg_message(guild_id, ctx.channel.id, msg.id)
+
+
+# ═══════════════════════════════════════════
+#  COMMAND: !jg [jawaban]
+#  Jawab soal tebak gambar
+#  Kalau salah → bot reply dengan jawaban salah dalam code block
+#  supaya user bisa copy & revisi cepat
+# ═══════════════════════════════════════════
+@bot.command(name="jg")
+async def jawab_tg(ctx, *, answer_input: str = None):
+    if not answer_input:
+        await ctx.send(
+            f"❌ {ctx.author.mention} Format: `!jg [jawaban]`\nContoh: `!jg Nasi Goreng`"
+        )
+        return
+
+    user_id   = str(ctx.author.id)
+    user_name = str(ctx.author)
+    guild_id  = str(ctx.guild.id)
+
+    if not tg_sys.is_tg_member(guild_id, user_id):
+        await ctx.send(
+            f"❌ {ctx.author.mention} kamu belum join! Ketik `!tgjoin` dulu."
+        )
+        return
+
+    doc_id, soal = tg_sys.get_active_soal_tg(guild_id)
+    if not soal:
+        await ctx.send(
+            f"❌ {ctx.author.mention} tidak ada soal aktif saat ini!"
+        )
+        return
+
+    result = tg_sys.try_answer_tg(doc_id, soal, answer_input, user_id, user_name)
+
+    if not result["correct"]:
+        # ── Jawaban salah: tampilkan jawaban salah dalam code block ──
+        wrong_embed = discord.Embed(color=0xD63031)
+        wrong_embed.description = (
+            f"❌ {ctx.author.mention} jawaban salah! Cek ejaan dan coba lagi.\n\n"
+            f"Salin jawaban kamu untuk direvisi:"
+        )
+        wrong_embed.add_field(
+            name="✏️ Jawaban yang kamu ketik",
+            value=f"```\n!jg {answer_input}\n```",
+            inline=False
+        )
+        wrong_embed.set_footer(text="Salin teks di atas, lalu perbaiki ejaannya!")
+        await ctx.reply(embed=wrong_embed, mention_author=False)
+        return
+
+    # ── Jawaban benar! ──
+    reward      = result["reward"]
+    new_balance = coin_sys.add_coins(user_id, reward)
+
+    embed = discord.Embed(
+        title="🎉 Jawaban Benar! Soal Selesai!",
+        color=0x00B894
+    )
+    embed.description = f"**Jawaban:** `{soal['answer']}`"
+    embed.add_field(name="🏆 Ditebak oleh", value=ctx.author.mention, inline=True)
+    embed.add_field(
+        name="💰 Reward",
+        value=f"+{reward} koin → total **{new_balance}** koin",
+        inline=True
+    )
+
+    # Tampilkan gambar soal sebagai konfirmasi
+    image_url = soal.get("imageUrl", "")
+    if image_url:
+        embed.set_image(url=image_url)
+
+    # Aktifkan soal berikutnya
+    next_id, next_soal = tg_sys.activate_next_soal_tg(guild_id)
+    if next_soal:
+        embed.add_field(
+            name="➡️ Soal Berikutnya",
+            value="Soal baru sudah aktif! Ketik `!tg` untuk lihat.",
+            inline=False
+        )
+    else:
+        embed.add_field(
+            name="📭 Pool Kosong",
+            value="Belum ada soal berikutnya. Submit soal baru lewat aplikasi!",
+            inline=False
+        )
+
+    # Hapus embed soal lama
+    channel_id, message_id = tg_sys.get_tg_message(guild_id)
+    if channel_id and message_id:
+        try:
+            ch = bot.get_channel(int(channel_id))
+            if ch:
+                old_msg = await ch.fetch_message(int(message_id))
+                await old_msg.delete()
+        except Exception:
+            pass
+
+    await ctx.send(embed=embed)
+
 
 # ═══════════════════════════════════════════
 #  JALANKAN BOT
