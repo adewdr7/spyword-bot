@@ -214,6 +214,15 @@ async def help_cmd(ctx):
         ),
         inline=False
     )
+    embed.add_field(
+        name="📱 Aplikasi",
+        value=(
+            "`!app` — Download aplikasi Chat and Spyfall\n"
+            "Fitur di app: submit soal tebak gambar, lihat kiriman soal,\n"
+            "verifikasi Discord, dan Admin Panel untuk owner server.\n"
+        ),
+        inline=False
+    )
     embed.set_footer(text="SpyWordBot • Game Chat Indonesia")
     await ctx.send(embed=embed)
 
@@ -1671,7 +1680,7 @@ class DownloadView(discord.ui.View):
 @bot.command(name="app")
 async def download_app(ctx):
     embed = discord.Embed(
-        title="📱 Keluarga Kaler App",
+        title="📱 Chat and Spyfall App",
         description=(
             "Download aplikasi untuk bisa:\n"
             "🧩 Submit soal tebak gambar\n"
