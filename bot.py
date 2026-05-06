@@ -1672,7 +1672,7 @@ class DownloadView(discord.ui.View):
         # ── GANTI URL DI BAWAH INI ──
         self.add_item(discord.ui.Button(
             label="📱 Download Aplikasi",
-            url="https://drive.usercontent.google.com/download?id=194B3RZplevTzqBE5krRBnNDD7FkOp9B9&export=download&authuser=0",  # ← ganti dengan link APK/Play Store
+            url="https://drive.usercontent.google.com/download?id=1EQI-Xz6Ga0wpdXHzHaA2TmMyo3EVziDz&export=download&authuser=0",
             style=discord.ButtonStyle.link
         ))
 
