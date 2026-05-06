@@ -1655,6 +1655,37 @@ async def verify_server_cmd(ctx):
 
 
 # ═══════════════════════════════════════════
+#  COMMAND: !app  — Tombol download aplikasi
+# ═══════════════════════════════════════════
+class DownloadView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        # ── GANTI URL DI BAWAH INI ──
+        self.add_item(discord.ui.Button(
+            label="📱 Download Aplikasi",
+            url="https://drive.usercontent.google.com/download?id=194B3RZplevTzqBE5krRBnNDD7FkOp9B9&export=download&authuser=0",  # ← ganti dengan link APK/Play Store
+            style=discord.ButtonStyle.link
+        ))
+
+
+@bot.command(name="app")
+async def download_app(ctx):
+    embed = discord.Embed(
+        title="📱 Keluarga Kaler App",
+        description=(
+            "Download aplikasi untuk bisa:\n"
+            "🧩 Submit soal tebak gambar\n"
+            "📦 Lihat status kiriman soalmu\n"
+            "🔐 Verifikasi akun Discord\n"
+            "🏠 Admin Panel server (untuk owner)"
+        ),
+        color=0x6C5CE7
+    )
+    embed.set_footer(text="Klik tombol di bawah untuk download!")
+    await ctx.send(embed=embed, view=DownloadView())
+
+
+# ═══════════════════════════════════════════
 #  JALANKAN BOT
 # ═══════════════════════════════════════════
 token = os.environ.get("DISCORD_TOKEN")
