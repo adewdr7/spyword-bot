@@ -1438,16 +1438,14 @@ async def verify_cmd(ctx):
     user_id   = str(ctx.author.id)
     user_name = str(ctx.author)
 
-    # Cek apakah sudah terverifikasi sebelumnya
-    user_doc = tg_sys.get_db().collection("users").document(user_id).get()
-    if user_doc.exists:
-        user_data = user_doc.to_dict()
-        if user_data.get("isVerified"):
-            await ctx.send(
-                "✅ Akunmu **sudah terverifikasi** sebelumnya!\n"
-                "Tidak perlu verifikasi ulang. Buka aplikasi dan lanjutkan."
-            )
-            return
+    # Selalu generate kode baru — user yang uninstall/install ulang app
+    # bisa verifikasi ulang kapan saja.
+    # Reset isVerified dulu supaya app tidak menganggap masih linked.
+    # generate_verify_code() pakai document(discord_id).set() sehingga
+    # otomatis menimpa kode lama — 1 user = 1 dokumen aktif di Firestore.
+    tg_sys.get_db().collection("users").document(user_id).set(
+        {"isVerified": False}, merge=True
+    )
 
     code = tg_sys.generate_verify_code(user_id, user_name)
 
