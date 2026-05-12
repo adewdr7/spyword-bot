@@ -209,7 +209,27 @@ async def help_cmd(ctx):
             "`!tgjoin` — Bergabung ke tebak gambar\n"
             "`!tg` — Tampilkan soal tebak gambar aktif\n"
             "`!jg [jawaban]` — Jawab soal tebak gambar\n"
-            "`!v` — Generate kode verifikasi Discord (via DM bot)\n"
+        ),
+        inline=False
+    )
+    embed.add_field(
+        name="🔐 Verifikasi & Admin",
+        value=(
+            "`!v` — Generate kode verifikasi akun Discord (via **DM bot**)\n"
+            "`!verifyserver` — Verifikasi server untuk Admin Panel\n"
+            "  ↳ Hanya **owner** atau member dengan izin **Manage Server**\n"
+            "  ↳ Kode dikirim via DM, berlaku 24 jam\n"
+        ),
+        inline=False
+    )
+    embed.add_field(
+        name="📱 Aplikasi",
+        value=(
+            "`!app` — Download aplikasi Chat and Spyfall\n"
+            "Fitur di app:\n"
+            "• Submit & lihat status soal tebak gambar\n"
+            "• Verifikasi akun Discord (`!v`)\n"
+            "• Admin Panel server (`!verifyserver`)\n"
         ),
         inline=False
     )
@@ -1418,13 +1438,16 @@ async def verify_cmd(ctx):
     user_id   = str(ctx.author.id)
     user_name = str(ctx.author)
 
-    # Reset isVerified supaya user yang uninstall & install ulang app
-    # bisa verifikasi ulang dengan bersih.
-    # generate_verify_code() sudah pakai document(discord_id).set()
-    # sehingga otomatis menimpa kode lama — 1 user = 1 dokumen aktif.
-    tg_sys.get_db().collection("users").document(user_id).set(
-        {"isVerified": False}, merge=True
-    )
+    # Cek apakah sudah terverifikasi sebelumnya
+    user_doc = tg_sys.get_db().collection("users").document(user_id).get()
+    if user_doc.exists:
+        user_data = user_doc.to_dict()
+        if user_data.get("isVerified"):
+            await ctx.send(
+                "✅ Akunmu **sudah terverifikasi** sebelumnya!\n"
+                "Tidak perlu verifikasi ulang. Buka aplikasi dan lanjutkan."
+            )
+            return
 
     code = tg_sys.generate_verify_code(user_id, user_name)
 
@@ -1585,6 +1608,100 @@ async def jawab_tg(ctx, *, answer_input: str = None):
             pass
 
     await ctx.send(embed=embed)
+
+
+# ═══════════════════════════════════════════
+#  COMMAND: !verifyserver
+#  Hanya bisa dipakai oleh owner server atau yang punya izin manage_guild
+#  Generate kode verifikasi server untuk Admin Panel di app
+# ═══════════════════════════════════════════
+@bot.command(name="verifyserver")
+async def verify_server_cmd(ctx):
+    # Hanya di server (bukan DM)
+    if ctx.guild is None:
+        await ctx.send("❌ Command ini hanya bisa dipakai di server Discord!")
+        return
+
+    # Cek izin: owner atau manage_guild
+    member = ctx.author
+    if not (ctx.guild.owner_id == member.id or member.guild_permissions.manage_guild):
+        await ctx.send(
+            f"❌ {ctx.author.mention} kamu tidak punya izin!\n"
+            f"Hanya **owner** atau member dengan izin **Manage Server** yang bisa verifikasi server."
+        )
+        return
+
+    guild_id   = str(ctx.guild.id)
+    guild_name = ctx.guild.name
+    user_id    = str(ctx.author.id)
+    user_name  = str(ctx.author)
+
+    code = tg_sys.generate_server_verify_code(guild_id, guild_name, user_id, user_name)
+
+    try:
+        embed = discord.Embed(
+            title="🏠 Kode Verifikasi Server",
+            description=(
+                "Salin kode di bawah ini dan masukkan ke aplikasi untuk "
+                "menghubungkan server ini.\n\n"
+                "**Kode berlaku 24 jam dan hanya bisa dipakai 1 kali.**"
+            ),
+            color=0xFDCB6E
+        )
+        embed.add_field(
+            name="🔑 Kode Server",
+            value=f"```\n{code}\n```",
+            inline=False
+        )
+        embed.add_field(
+            name="📱 Cara Pakai",
+            value=(
+                "1. Buka aplikasi\n"
+                "2. Masuk ke menu **Admin Panel**\n"
+                "3. Paste kode di atas\n"
+                "4. Tekan **Verifikasi Server**"
+            ),
+            inline=False
+        )
+        embed.set_footer(text="Jangan bagikan kode ini ke sembarang orang!")
+        await ctx.author.send(embed=embed)
+        await ctx.send(f"✅ {ctx.author.mention} kode verifikasi server sudah dikirim via **DM**!")
+    except discord.Forbidden:
+        await ctx.send(
+            f"❌ Tidak bisa kirim DM ke {ctx.author.mention}. "
+            f"Aktifkan DM dari server ini dulu di pengaturan Discord."
+        )
+
+
+# ═══════════════════════════════════════════
+#  COMMAND: !app  — Tombol download aplikasi
+# ═══════════════════════════════════════════
+class DownloadView(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+        # ── GANTI URL DI BAWAH INI ──
+        self.add_item(discord.ui.Button(
+            label="📱 Download Aplikasi",
+            url="https://drive.usercontent.google.com/download?id=1EQI-Xz6Ga0wpdXHzHaA2TmMyo3EVziDz&export=download&authuser=0",
+            style=discord.ButtonStyle.link
+        ))
+
+
+@bot.command(name="app")
+async def download_app(ctx):
+    embed = discord.Embed(
+        title="📱 Chat and Spyfall App",
+        description=(
+            "Download aplikasi untuk bisa:\n"
+            "🧩 Submit soal tebak gambar\n"
+            "📦 Lihat status kiriman soalmu\n"
+            "🔐 Verifikasi akun Discord\n"
+            "🏠 Admin Panel server (untuk owner)"
+        ),
+        color=0x6C5CE7
+    )
+    embed.set_footer(text="Klik tombol di bawah untuk download!")
+    await ctx.send(embed=embed, view=DownloadView())
 
 
 # ═══════════════════════════════════════════
