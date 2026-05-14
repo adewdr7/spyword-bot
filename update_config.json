@@ -1,8 +1,8 @@
 {
-  "latest_version_code": 1,
-  "latest_version_name": "1.0",
-  "force_update": false,
-  "update_message": "Ada versi baru yang lebih kenceng dan stabil! Yuk update sekarang.",
-  "download_url": "https://github.com/USERNAME/REPO/releases/latest"
+  "latest_version_code": 2,
+  "latest_version_name": "1.1",
+  "force_update": true,
+  "update_message": "Soal tebak gambar hanya bisa tampil per server bukan lintas server",
+  "download_url": "https://www.mediafire.com/file/6a6idny0fwqioaq/KeluargaKaler-debug.apk/file"
 }
 
