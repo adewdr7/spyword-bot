@@ -1680,7 +1680,7 @@ class DownloadView(discord.ui.View):
         # ── GANTI URL DI BAWAH INI ──
         self.add_item(discord.ui.Button(
             label="📱 Download Aplikasi",
-            url="https://drive.usercontent.google.com/download?id=1EQI-Xz6Ga0wpdXHzHaA2TmMyo3EVziDz&export=download&authuser=0",
+            url="https://www.mediafire.com/file/xh78d1tggccglsz/Spyfall.apk/file",
             style=discord.ButtonStyle.link
         ))
 
